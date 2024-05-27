@@ -19,7 +19,7 @@ void loopCmd(char* serialPort);
 int initSerialPort(const char* serialport);
 int closeSerialPort(int fd);
 int writeSerialPort(int fd, const char* str);
-int readuntilSerialPort(int fd, char* buffer, char until, int bufferMax, int timeout)
+int readuntilSerialPort(int fd, char* buffer, char until, int bufferMax, int timeout);
 int flushSerialPort(int fd);
 
 #endif

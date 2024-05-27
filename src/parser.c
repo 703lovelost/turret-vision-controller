@@ -20,6 +20,8 @@
 #define ENGINE_BODY 1
 #define ENGINE_CAMERA 2
 
+#define bufferMax 256
+
 union int32 {
     int32_t i;
     char s[sizeof(int32_t)];
@@ -55,28 +57,28 @@ void printCommandList() {
     printf("\t\tbody\n");
     printf("\t\tcamera\n");
     printf("\t*rotation-degree*:\n");
-    printf("\t\tvalue from -360 to 360 (every other input will be turned into the closest limit value)\n"); 
+    printf("\t\tvalue from -360 to 360 (every other input will be turned into the closest limit value)\n");
 
     printf("\n");
 
-    printf("exit\n");   
+    printf("exit\n");
 }
 
 void printExitMessage() {
-    printf("Controller is off.");
+    printf("Controller is off.\n");
 }
 
 void printStatusMessage(int statusCode) {
     switch (statusCode) {
-        case UNSPECIFIED_COMMAND:
-            printf("Unspecified command.\n");
-            break;
-        case UNKNOWN_COMMAND:
-            printf("Unknown command.\n");
-            break;
-        case PROCESSED_COMMAND:
-            printf("Command is sent.\n");
-            break;
+    case UNSPECIFIED_COMMAND:
+        printf("Unspecified command.\n");
+        break;
+    case UNKNOWN_COMMAND:
+        printf("Unknown command.\n");
+        break;
+    case PROCESSED_COMMAND:
+        printf("Command is sent.\n");
+        break;
     }
 }
 
@@ -87,7 +89,7 @@ int32_t getDegrees(char* cmd) {
     if (degreesInt < LEFT_ROTATION_LIMIT) {
         degreesInt = LEFT_ROTATION_LIMIT;
     }
-    
+
     if (degreesInt > RIGHT_ROTATION_LIMIT) {
         degreesInt = RIGHT_ROTATION_LIMIT;
     }
@@ -115,16 +117,16 @@ int readCommand(const int fd, char* cmd, char* buffer, int bufferSize) {
 
     if (strcmp(cmdRotate, cmd) == 0) {
         union int32 degrees;
-        cmd = strtok(cmd, " ");
+        cmdParsed = strtok(cmd, " ");
 
-        if (strcmp(bodyParam, cmd) == 0) {
+        if (strcmp(bodyParam, cmdParsed) == 0) {
             degrees.i = getDegrees(cmd);
             cmdParsed = createCmdString(ROTATE_CODE, ENGINE_BODY, degrees.s);
             writeSerialPort(fd, cmdParsed);
             readuntilSerialPort(fd, buffer, eolchar, bufferSize, timeout);
             printf("%s\n", buffer);
         }
-        else if (strcmp(cameraParam, cmd) == 0) {
+        else if (strcmp(cameraParam, cmdParsed) == 0) {
             degrees.i = getDegrees(cmd);
             cmdParsed = createCmdString(ROTATE_CODE, ENGINE_CAMERA, degrees.s);
             writeSerialPort(fd, cmdParsed);
@@ -141,8 +143,6 @@ int readCommand(const int fd, char* cmd, char* buffer, int bufferSize) {
 }
 
 void loopCmd(char* serialPort) {
-    const int bufferMax = 256;
-
     char cmd[bufferMax];
     char buffer[bufferMax];
 
@@ -172,15 +172,15 @@ void loopCmd(char* serialPort) {
                 while (tokenCmd != NULL) {
                     rdCode = readCommand(fd, cmd, buffer, bufferMax);
                     switch (rdCode) {
-                        case 0:
-                            printStatusMessage(UNSPECIFIED_COMMAND);
-                            break;
-                        case 1:
-                            printStatusMessage(PROCESSED_COMMAND);
-                            break;
-                        case 2:
-                            printStatusMessage(UNKNOWN_COMMAND);
-                            break;                            
+                    case 0:
+                        printStatusMessage(UNSPECIFIED_COMMAND);
+                        break;
+                    case 1:
+                        printStatusMessage(PROCESSED_COMMAND);
+                        break;
+                    case 2:
+                        printStatusMessage(UNKNOWN_COMMAND);
+                        break;
                     }
                     break;
                 }
