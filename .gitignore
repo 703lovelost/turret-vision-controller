@@ -1,3 +1,4 @@
-**/src/glade-src
-**/.vscode
 **/drafts
+**/.vscode
+**/*.o
+**/*.so
