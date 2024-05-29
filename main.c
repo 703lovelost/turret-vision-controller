@@ -7,7 +7,7 @@
 
 int main(int argc, char** argv) {
     if (argc > 2) {
-        printf("bro you could just type '_'\n");
+        printf("'control-turret *port*' was just enough.\n");
         printf("anyway\n");
         printf("\n");
     }
@@ -16,7 +16,7 @@ int main(int argc, char** argv) {
 
     printWelcomeMessage();
 
-    loopCmd(serialPort);
+    loop(serialPort);
 
     return 0;
 }
